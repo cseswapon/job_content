@@ -1,6 +1,7 @@
 import React from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { FiTrash } from "react-icons/fi";
+import { useJobPostMutation } from "../../features/job/jobApi";
 
 const AddJob = () => {
   const { handleSubmit, register, control } = useForm();
@@ -19,10 +20,13 @@ const AddJob = () => {
     append: reqAppend,
     remove: reqRemove,
   } = useFieldArray({ control, name: "requirements" });
+  const [postJob, { isLoading, isError, isSuccess }] = useJobPostMutation();
 
   const onSubmit = (data) => {
     console.log(data);
+    postJob(data)
   };
+
 
   return (
     <div className='flex justify-center items-center overflow-auto p-10'>

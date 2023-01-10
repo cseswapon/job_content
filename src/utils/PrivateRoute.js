@@ -6,8 +6,11 @@ const PrivateRoute = ({ children }) => {
   const { pathname } = useLocation();
   /* const isLoading = false;
   const email = "test@gmail.com"; */
-  const { isLoading, email } = useSelector((state) => state.auth);
-console.log(isLoading,email);
+  const {
+    isLoading,
+    user: { email },
+  } = useSelector((state) => state.auth);
+  // console.log(isLoading, email);
   if (isLoading) {
     return <Loading />;
   }

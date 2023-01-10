@@ -8,8 +8,11 @@ import { useDispatch } from "react-redux";
 const Navbar = () => {
   const { pathname } = useLocation();
   const auths = useSelector((state) => state.auth);
+  const {
+    isLoading,
+    user: { email, role },
+  } = auths;
   const dispatch = useDispatch();
-  const { isLoading, email } = auths;
   // console.log(isLoading, email);
   const handelLogout = () => {
     signOut(auth).then(() => {
@@ -33,22 +36,26 @@ const Navbar = () => {
         </li>
 
         <li>
-          {!isLoading && email &&
+          {!isLoading && email && (
             <span>
-              <Link
-                className="border border-black px-2 py-1 rounded-full hover:border-primary hover:text-white hover:bg-primary hover:px-4 transition-all "
-                to="/dashboard"
-              >
-                Dashboard
-              </Link>
-              <Link
-                className="border border-black px-2 py-1 rounded-full hover:border-primary hover:text-white hover:bg-primary hover:px-4 transition-all mx-3"
-                to="/register"
-              >
-                register
-              </Link>
+              {email && role && (
+                <Link
+                  className="border border-black px-2 py-1 rounded-full hover:border-primary hover:text-white hover:bg-primary hover:px-4 transition-all "
+                  to="/dashboard"
+                >
+                  Dashboard
+                </Link>
+              )}
+              {email && !role && (
+                <Link
+                  className="border border-black px-2 py-1 rounded-full hover:border-primary hover:text-white hover:bg-primary hover:px-4 transition-all mx-3"
+                  to="/register"
+                >
+                  register
+                </Link>
+              )}
             </span>
-          }
+          )}
           {!isLoading && email ? (
             <button
               className="border border-black px-2 py-1 rounded-full hover:border-primary hover:text-white hover:bg-primary hover:px-4 transition-all "

@@ -6,9 +6,16 @@ import { useRegisterMutation } from "../../features/auth/authApi";
 import { useSelector } from "react-redux";
 
 const EmployerRegistration = () => {
+  const [postUser, { isError, isLoading, isSuccess }] = useRegisterMutation();
+  const {
+    user: { email },
+  } = useSelector((state) => state.auth);
+  // console.log(email);
   const [countries, setCountries] = useState([]);
 
-  const { handleSubmit, register, control } = useForm();
+  const { handleSubmit, register, control } = useForm({
+    defaultValues: {email},
+  });
   const term = useWatch({ control, name: "term" });
   const navigate = useNavigate();
 
@@ -41,11 +48,8 @@ const EmployerRegistration = () => {
       .then((data) => setCountries(data));
   }, []);
 
-  const [postUser, { isError, isLoading, isSuccess }] = useRegisterMutation();
-  const { email } = useSelector(state => state.auth);
-  console.log(email);
   const onSubmit = (data) => {
-    // console.log(data);
+    console.log(data);
     postUser({ ...data, role: "employed" });
   };
 
@@ -80,7 +84,7 @@ const EmployerRegistration = () => {
             <label className="mb-2" htmlFor="email">
               Email
             </label>
-            <input type="email" id="email" defaultValue={email} disabled {...register("email")} />
+            <input type="email" id="email" className="cursor-not-allowed" readOnly {...register("email")} />
           </div>
           <div className="flex flex-col w-full max-w-xs">
             <h1 className="mb-3">Gender</h1>

@@ -8,8 +8,7 @@ const initialState = {
   isLoading: false,
   isError: false,
   error: "",
-  email: "",
-  role: "",
+  user: { email: "", role: "" },
 };
 
 export const createUser = createAsyncThunk(
@@ -27,15 +26,25 @@ export const logInUser = createAsyncThunk(
   }
 );
 
+export const getUser = createAsyncThunk("auth/getUser", async (email) => {
+  const res = await fetch(`${process.env.REACT_APP_localApi}user/${email}`);
+  const data = await res.json();
+  if (data.status) {
+    return data;
+  } else {
+    return email;
+  }
+});
+
 const authSlice = createSlice({
   name: "authSlice",
   initialState,
   reducers: {
     singOut: (state) => {
-      state.email = "";
+      state.user.email = "";
     },
     addEmail: (state, action) => {
-      state.email = action.payload;
+      state.user.email = action.payload;
     },
     toggleLoading: (state) => {
       state.isLoading = false;
@@ -46,12 +55,12 @@ const authSlice = createSlice({
       .addCase(createUser.pending, (state) => {
         state.isLoading = true;
         state.isError = false;
-        state.email = "";
+        state.user.email = "";
       })
       .addCase(createUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isError = false;
-        state.email = action.payload.user.email;
+        state.user.email = action.payload.user.email;
         state.error = "";
       })
       .addCase(createUser.rejected, (state, action) => {
@@ -62,15 +71,37 @@ const authSlice = createSlice({
       .addCase(logInUser.pending, (state) => {
         state.isLoading = true;
         state.isError = false;
-        state.email = "";
+        state.user.email = "";
       })
       .addCase(logInUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isError = false;
-        state.email = action.payload.user.email;
+        state.user.email = action.payload.user.email;
         state.error = "";
       })
       .addCase(logInUser.rejected, (state, action) => {
+        state.error = action.error.message;
+        state.isError = true;
+        state.isLoading = false;
+      })
+      .addCase(getUser.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+        state.user = {};
+      })
+      .addCase(getUser.fulfilled, (state, { payload }) => {
+        console.log(payload);
+        state.isLoading = false;
+        state.isError = false;
+        if (payload.status) {
+          state.user = payload.data ? payload.data : null;
+        } else {
+          state.user.email = payload;
+          state.user.role = "";
+        }
+        state.error = "";
+      })
+      .addCase(getUser.rejected, (state, action) => {
         state.error = action.error.message;
         state.isError = true;
         state.isLoading = false;
